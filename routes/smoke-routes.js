@@ -2,8 +2,11 @@ const express = require('express');
 
 const router = express.Router();
 
-router.get('/smoke/:type/:id', );
+const smokeControllers = require('../controllers/smoke-controllers');
 
-router.post('/',);
+router.get('/smoke/:km', smokeControllers.getSmokeData);
+router.patch('/:filename', smokeControllers.patchSmokeData);
+
+module.exports = router;
 
 

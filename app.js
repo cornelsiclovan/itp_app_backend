@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const gasRoutes = require('./routes/gas-routes');
+const smokeRoutes = require('./routes/smoke-routes');
 
 const app = express();
 
@@ -19,6 +20,8 @@ app.use((req, res, next) => {
 });
 
 app.use('/api/gas', gasRoutes);
+app.use('/api/smoke', smokeRoutes)
+
 app.listen(5001);
 
 
