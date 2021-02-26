@@ -682,8 +682,8 @@ const getGasData = async (req, res, next) => {
         res.json(gas_bun_05[req.params.id]);
     } else if (req.params.type === "35") {
         res.json(gas_bun_35[req.params.id]);
-    } else if (req.params.type === "40") {
-        res.json(gas_bun_40[req.params.id]);
+    } else if (req.params.type === "45") {
+        res.json(gas_bun_45[req.params.id]);
     }
 }
 
@@ -691,7 +691,10 @@ const patchGasData = async (req, res, next) => {
 
     let filePath = req.params.filename.replaceAll('xxx', '\\');
 
-    const { lambda, hc, o2, co2, co, coc, afr } = req.body;
+    const { lambda_1, lambda_2, hc_1, hc_2, 
+            o2_1, o2_2, co2_1, co2_2, co_1, co_2, 
+            coc_1, coc_2, afr_1, afr_2, tur_rpm_1, tur_rpm_2, 
+            temp_c_1, temp_c_2} = req.body;
 
     fs.readFile(filePath, async(err, data) => {
         let htmlString;
@@ -701,19 +704,54 @@ const patchGasData = async (req, res, next) => {
 
             var resArray = htmlString.split("|");
 
-            resArray[14] = "&nbsp;&nbsp;" + co + "&nbsp;&nbsp;";
+            resArray[14] = "&nbsp;&nbsp;&nbsp;" + co_1 + "&nbsp;&nbsp;";
+            resArray[15] = "&nbsp;&nbsp;&nbsp;" + co_2 + "&nbsp;&nbsp;";
             
-            resArray[18] = "&nbsp;&nbsp;" + co2 + "&nbsp;&nbsp;";
-          
-            resArray[22] = "&nbsp;&nbsp;" + hc + "&nbsp;&nbsp;";
+            resArray[18] = "&nbsp;&nbsp;&nbsp;" + co2_1 + "&nbsp;&nbsp;";
+            resArray[19] = "&nbsp;&nbsp;&nbsp;" + co2_2 + "&nbsp;&nbsp;";
 
-            resArray[26] = "&nbsp;&nbsp;" + o2 + "&nbsp;&nbsp;";
-        
-            resArray[30] = "&nbsp;&nbsp;" + lambda + "&nbsp;&nbsp;";
+            let nbsp = await getNbsp(hc_1, 4, 3);
 
-            resArray[34] = "&nbsp;&nbsp;" + coc + "&nbsp;&nbsp;";
+            resArray[22] = nbsp + hc_1 + "&nbsp;&nbsp;";
+
+            nbsp = await getNbsp(hc_2, 4, 3);
+
+            resArray[23] = nbsp + hc_2 + "&nbsp;&nbsp;";
+
+            resArray[26] = "&nbsp;&nbsp;&nbsp;" + o2_1 + "&nbsp;&nbsp;";
+            resArray[27] = "&nbsp;&nbsp;&nbsp;" + o2_2 + "&nbsp;&nbsp;";
         
-            resArray[38] = "&nbsp;&nbsp;" + afr + "&nbsp;&nbsp;";
+            resArray[30] = "&nbsp;&nbsp;&nbsp;" + lambda_1 + "&nbsp;&nbsp;";
+            resArray[31] = "&nbsp;&nbsp;&nbsp;" + lambda_2 + "&nbsp;&nbsp;";
+
+            resArray[34] = "&nbsp;&nbsp;&nbsp;" + coc_1 + "&nbsp;&nbsp;";
+            resArray[35] = "&nbsp;&nbsp;&nbsp;" + coc_2 + "&nbsp;&nbsp;";
+        
+            resArray[38] = "&nbsp;&nbsp;" + afr_1 + "&nbsp;&nbsp;";
+            resArray[39] = "&nbsp;&nbsp;" + afr_2 + "&nbsp;&nbsp;";
+
+            if(parseInt(tur_rpm_1) < 1000) {
+                tur_string = "&nbsp;" + tur_rpm_1;
+            } else {
+                tur_string = tur_rpm_1;
+            }
+
+            resArray[42] = "&nbsp;&nbsp;&nbsp;" + tur_string + "&nbsp;&nbsp;";
+
+            if(parseInt(tur_rpm_2) < 1000) {
+                tur_string = "&nbsp;" + tur_rpm_2;
+            } else {
+                tur_string = tur_rpm_2;
+            }
+
+
+            if(tur_rpm_2 != 0)
+                resArray[43] = "&nbsp;&nbsp;&nbsp;" + tur_string + "&nbsp;&nbsp;";
+
+            resArray[46] = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + temp_c_1 + "&nbsp;&nbsp;";
+            
+            if(temp_c_2 != 0)
+                resArray[47] = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + temp_c_2 + "&nbsp;&nbsp;";
 
             htmlString = resArray.join("|");
         
@@ -722,11 +760,9 @@ const patchGasData = async (req, res, next) => {
             });
 
             
-                // const htmlContent = fs.readFileSync(filePath, 'utf8');
-
-                // console.log(htmlContent);
+               
             const htmlContent = utf8.encode(htmlString);
-            
+        
             const pdfFilePath = filePath.split(".")[0] + ".pdf";
 
             const htmlToPdfOptions = {
@@ -742,11 +778,24 @@ const patchGasData = async (req, res, next) => {
                     console.log(res);
                 });
            
+           
         }
 
 
     });
 
+    res.status(200);
+}
+
+const getNbsp = async (string, initialSize, customSize) => {
+    let nbspString = '';
+    let nbspSize   = initialSize + customSize - string.length;
+
+    for (let i=0; i<nbspSize; i++) {
+        nbspString += "&nbsp;";
+    }    
+
+    return nbspString;
 }
 
 exports.getGasData = getGasData;

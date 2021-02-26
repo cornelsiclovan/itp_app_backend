@@ -6,53 +6,46 @@ const htmlPdf = require('html-pdf');
 const utf8 = require('utf8');
 
 
-const getSmokeData = async (req, res, next) => {    
-
-    if(req.params.type === "30") {
-        res.json(gas_bun_03[req.params.id]);
-    } else if (req.params.type === "50") {
-        res.json(gas_bun_05[req.params.id]);
-    } else if (req.params.type === "35") {
-        res.json(gas_bun_35[req.params.id]);
-    } else if (req.params.type === "40") {
-        res.json(gas_bun_40[req.params.id]);
-    }
-}
-
 const patchSmokeData = async (req, res, next) => {
 
     let filePath = req.params.filename.replaceAll('xxx', '\\');
-
+    const { k_m, ral_rpm, reg_rpm, tbaza_s} = req.body;
 
     fs.readFile(filePath, async(err, data) => {
         let htmlString;
-
+ 
         if(data != undefined) {
             htmlString = data.toString();
 
             var resArray = htmlString.split("|");
 
-            resArray[14] = "&nbsp;&nbsp;" + co + "&nbsp;&nbsp;";
-            
-            resArray[18] = "&nbsp;&nbsp;" + co2 + "&nbsp;&nbsp;";
-          
-            resArray[22] = "&nbsp;&nbsp;" + hc + "&nbsp;&nbsp;";
+            console.log(resArray[23]);
 
-            resArray[26] = "&nbsp;&nbsp;" + o2 + "&nbsp;&nbsp;";
-        
-            resArray[30] = "&nbsp;&nbsp;" + lambda + "&nbsp;&nbsp;";
-
-            resArray[34] = "&nbsp;&nbsp;" + coc + "&nbsp;&nbsp;";
-        
-            resArray[38] = "&nbsp;&nbsp;" + afr + "&nbsp;&nbsp;";
+            resArray[23] = "&nbsp;"+k_m+"*";
 
             htmlString = resArray.join("|");
-        
-            await fs.writeFile(filePath, htmlString, (error) => {
-                if(error) return console.log(error);
-            });
 
-            
+
+            let admisArray = htmlString.split("<BR>");
+
+            let kmediuArray = admisArray[41].split("=");
+            let addNbspString = "";
+            let startString = "&nbsp;";
+            startString += k_m;
+            startString += "&nbsp;/m&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*";
+
+            for(let i = 0; i < 3 - k_m.length; i++) {
+                addNbspString += "&nbsp;";
+            }
+
+            startString += addNbspString;
+
+            kmediuArray[1] = startString;
+
+            admisArray[41] = kmediuArray.join("="); 
+
+            htmlString = admisArray.join("<BR>");
+
                 // const htmlContent = fs.readFileSync(filePath, 'utf8');
 
                 // console.log(htmlContent);
@@ -74,11 +67,9 @@ const patchSmokeData = async (req, res, next) => {
                 });
            
         }
-
-
     });
 
+    res.status(200);
 }
 
-exports.getSmokeData = getSmokeData;
 exports.patchSmokeData = patchSmokeData;
