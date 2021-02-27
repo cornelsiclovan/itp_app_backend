@@ -707,7 +707,13 @@ const patchGasData = async (req, res, next) => {
             resArray[14] = "&nbsp;&nbsp;&nbsp;" + co_1 + "&nbsp;&nbsp;";
             resArray[15] = "&nbsp;&nbsp;&nbsp;" + co_2 + "&nbsp;&nbsp;";
             
-            resArray[18] = "&nbsp;&nbsp;&nbsp;" + co2_1 + "&nbsp;&nbsp;";
+            if(co2_1.length === 3) {
+                resArray[18] = "&nbsp;&nbsp;&nbsp;&nbsp;" + co2_1 + "&nbsp;&nbsp;"; 
+            } else {
+                resArray[18] = "&nbsp;&nbsp;&nbsp;" + co2_1 + "&nbsp;&nbsp;";
+            }
+
+            //resArray[18] = "&nbsp;&nbsp;&nbsp;" + co2_1 + "&nbsp;&nbsp;";
             resArray[19] = "&nbsp;&nbsp;&nbsp;" + co2_2 + "&nbsp;&nbsp;";
 
             let nbsp = await getNbsp(hc_1, 4, 3);
@@ -717,6 +723,12 @@ const patchGasData = async (req, res, next) => {
             nbsp = await getNbsp(hc_2, 4, 3);
 
             resArray[23] = nbsp + hc_2 + "&nbsp;&nbsp;";
+
+            if(o2_1.length === 3) {
+                resArray[26] = "&nbsp;&nbsp;&nbsp;&nbsp;" + o2_1 + "&nbsp;&nbsp;";
+            } else {
+                resArray[26] = "&nbsp;&nbsp;&nbsp;" + o2_1 + "&nbsp;&nbsp;";
+            }
 
             resArray[26] = "&nbsp;&nbsp;&nbsp;" + o2_1 + "&nbsp;&nbsp;";
             resArray[27] = "&nbsp;&nbsp;&nbsp;" + o2_2 + "&nbsp;&nbsp;";
